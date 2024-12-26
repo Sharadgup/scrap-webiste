@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Scraper</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Website Scraper</h1>
+        <form id="scrape-form">
+            <label for="url">Website URL:</label>
+            <input type="text" id="url" name="url" placeholder="Enter the website URL" required>
+
+            <label for="depth">Scraping Depth:</label>
+            <input type="number" id="depth" name="depth" value="2" min="1" max="5" required>
+
+            <button type="submit">Start Scraping</button>
+        </form>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        document.getElementById('scrape-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const url = document.getElementById('url').value;
+            const depth = document.getElementById('depth').value;
+
+            fetch('/scrape', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `url=${url}&depth=${depth}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultsDiv = document.getElementById('results');
+                resultsDiv.innerHTML = ''; // Clear previous results
+
+                if (data.error) {
+                    resultsDiv.innerHTML = `<p class="error">${data.error}</p>`;
+                } else {
+                    data.results.forEach(result => {
+                        const resultHTML = `<div class="result">
+                            <h2>${result.url}</h2>
+                            <p><strong>Title:</strong> ${result.title}</p>
+                            <p><strong>Description:</strong> ${result.description}</p>
+                            <p><strong>APIs:</strong> ${result.apis.join(', ')}</p>
+                            <p><strong>Clients:</strong> ${result.clients.join(', ')}</p>
+                        </div>`;
+                        resultsDiv.innerHTML += resultHTML;
+                    });
+                }
+            })
+            .catch(error => {
+                document.getElementById('results').innerHTML = `<p class="error">An error occurred: ${error}</p>`;
+            });
+        });
+    </script>
+</body>
+</html>
