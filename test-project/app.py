@@ -1,8 +1,8 @@
+from flask import Flask, render_template, request, jsonify
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
 import re
-from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 
@@ -88,20 +88,23 @@ def deep_scrape(url, max_depth=2, visited=None, results=None):
 def index():
     return render_template('index.html')
 
-# Flask route to handle scraping requests
-@app.route('/scrape', methods=['POST'])
+# Flask route to handle scraping requests (Accept both GET and POST)
+@app.route('/scrape', methods=['GET', 'POST'])
 def scrape():
-    website_url = request.form.get('website_url')
-    depth = int(request.form.get('depth'))
-    
-    if not website_url:
-        return jsonify({"error": "Please enter a website URL."})
+    if request.method == 'POST':
+        website_url = request.form.get('website_url')
+        depth = int(request.form.get('depth'))
+        
+        if not website_url:
+            return jsonify({"error": "Please enter a website URL."})
 
-    # Scrape the website
-    results = deep_scrape(website_url, max_depth=depth)
-    
-    # Render the results in a template
-    return render_template('results.html', results=results)
+        # Scrape the website
+        results = deep_scrape(website_url, max_depth=depth)
+        
+        # Render the results in a template
+        return render_template('results.html', results=results)
+
+    return jsonify({"error": "Method Not Allowed. Use POST to submit data."})
 
 if __name__ == '__main__':
     app.run(debug=True)
