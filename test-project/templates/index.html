@@ -4,17 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Website Scraper</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
+
     <div class="container">
         <h1>Website Scraper</h1>
-        <form id="scrape-form">
-            <label for="url">Website URL:</label>
-            <input type="text" id="url" name="url" placeholder="Enter the website URL" required>
 
-            <label for="depth">Scraping Depth:</label>
-            <input type="number" id="depth" name="depth" value="2" min="1" max="5" required>
+        <form id="scrape-form">
+            <div class="input-group">
+                <label for="url">Website URL:</label>
+                <input type="text" id="url" name="url" required>
+            </div>
+
+            <div class="input-group">
+                <label for="depth">Scraping Depth:</label>
+                <input type="number" id="depth" name="depth" value="2" min="1" max="5">
+            </div>
 
             <button type="submit">Start Scraping</button>
         </form>
@@ -48,8 +54,8 @@
                             <h2>${result.url}</h2>
                             <p><strong>Title:</strong> ${result.title}</p>
                             <p><strong>Description:</strong> ${result.description}</p>
-                            <p><strong>APIs:</strong> ${result.apis.join(', ')}</p>
-                            <p><strong>Clients:</strong> ${result.clients.join(', ')}</p>
+                            <p><strong>APIs:</strong> ${result.apis && result.apis.length > 0 ? result.apis.join(', ') : 'None'}</p>
+                            <p><strong>Clients:</strong> ${result.clients && result.clients.length > 0 ? result.clients.join(', ') : 'None'}</p>
                         </div>`;
                         resultsDiv.innerHTML += resultHTML;
                     });
@@ -60,5 +66,6 @@
             });
         });
     </script>
+
 </body>
 </html>

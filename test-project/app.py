@@ -1,18 +1,10 @@
 from flask import Flask, render_template, request, jsonify
-from pyvirtualdisplay import Display
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
 import re
 
 app = Flask(__name__)
-
-# Start virtual display (for headless environments)
-try:
-    display = Display(visible=0, size=(800, 600))
-    display.start()
-except Exception as e:
-    print(f"Virtual display could not start: {e}")
 
 # Headers for requests
 HEADERS = {
@@ -54,10 +46,11 @@ def extract_data(html):
 
     # Detect APIs or database mentions in the text
     api_patterns = re.findall(r'https?://[^\s"]+', data['text'])
-    data['apis'] = api_patterns
+    data['apis'] = api_patterns if api_patterns else []
 
     # Detect potential client mentions
     data['clients'] = re.findall(r'client[s]?\s?:\s?[\w, ]+', data['text'], re.IGNORECASE)
+    data['clients'] = data['clients'] if data['clients'] else []
 
     return data
 
@@ -85,9 +78,8 @@ def deep_scrape(url, max_depth=2, visited=None, results=None):
 
     return results
 
-# Routes for Flask
 @app.route('/')
-def home():
+def index():
     return render_template('index.html')
 
 @app.route('/scrape', methods=['POST'])
@@ -99,19 +91,7 @@ def scrape():
         return jsonify({"error": "Please enter a website URL."})
 
     results = deep_scrape(website_url, max_depth=depth)
-    scrape_results = []
-
-    for result in results:
-        for url, data in result.items():
-            result_data = {"url": url}
-            if isinstance(data, dict):
-                for key, value in data.items():
-                    result_data[key] = value
-            else:
-                result_data['error'] = data
-            scrape_results.append(result_data)
-
-    return jsonify({"results": scrape_results})
+    return jsonify({"results": results})
 
 if __name__ == '__main__':
     app.run(debug=True)
