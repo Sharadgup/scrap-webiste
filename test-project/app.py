@@ -1,8 +1,8 @@
-from flask import Flask, render_template, request, jsonify
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
 import re
+from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 
@@ -15,7 +15,7 @@ HEADERS = {
 def fetch_page(url):
     try:
         response = requests.get(url, headers=HEADERS, timeout=10)
-        response.raise_for_status()
+        response.raise_for_status()  # Check if request was successful
         return response.text
     except requests.exceptions.RequestException as e:
         return f"Error fetching {url}: {e}"
@@ -36,10 +36,12 @@ def extract_data(html):
     soup = BeautifulSoup(html, "html.parser")
     data = {}
 
-    # Extract title and meta description
-    data['title'] = soup.title.string if soup.title else "N/A"
-    meta_desc = soup.find("meta", attrs={"name": "description"})
-    data['description'] = meta_desc["content"] if meta_desc else "N/A"
+    # Extract title and meta description with fallback handling
+    title = soup.title.string if soup.title else None
+    meta_desc = soup.find("meta", attrs={"name": "description"}) or soup.find("meta", attrs={"property": "og:description"})
+
+    data['title'] = title if title else "No Title Found"
+    data['description'] = meta_desc["content"] if meta_desc else "No Description Found"
 
     # Extract visible text
     data['text'] = " ".join(soup.stripped_strings)
@@ -54,7 +56,7 @@ def extract_data(html):
 
     return data
 
-# Recursive scraper
+# Recursive scraper with improved error handling and better logging
 def deep_scrape(url, max_depth=2, visited=None, results=None):
     if visited is None:
         visited = set()
@@ -65,8 +67,10 @@ def deep_scrape(url, max_depth=2, visited=None, results=None):
 
     visited.add(url)
     html = fetch_page(url)
-    if not html or "Error" in html:
-        results.append({url: "Error or inaccessible"})
+    
+    # Log the fetched HTML for debugging
+    if html.startswith("Error"):
+        results.append({url: html})  # Log the error message
         return results
 
     data = extract_data(html)
@@ -74,24 +78,30 @@ def deep_scrape(url, max_depth=2, visited=None, results=None):
 
     links = extract_links(html, url)
     for link in links:
+        # Recursive call to scrape further links
         deep_scrape(link, max_depth - 1, visited, results)
 
     return results
 
+# Flask route to render the index page
 @app.route('/')
 def index():
     return render_template('index.html')
 
+# Flask route to handle scraping requests
 @app.route('/scrape', methods=['POST'])
 def scrape():
-    website_url = request.form['url']
-    depth = int(request.form['depth'])
-
+    website_url = request.form.get('website_url')
+    depth = int(request.form.get('depth'))
+    
     if not website_url:
         return jsonify({"error": "Please enter a website URL."})
 
+    # Scrape the website
     results = deep_scrape(website_url, max_depth=depth)
-    return jsonify({"results": results})
+    
+    # Render the results in a template
+    return render_template('results.html', results=results)
 
 if __name__ == '__main__':
     app.run(debug=True)

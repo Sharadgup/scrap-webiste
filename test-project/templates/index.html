@@ -4,68 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Website Scraper</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-
     <div class="container">
         <h1>Website Scraper</h1>
+        <form action="/scrape" method="POST">
+            <label for="website_url">Website URL:</label>
+            <input type="text" id="website_url" name="website_url" placeholder="Enter URL" required><br>
 
-        <form id="scrape-form">
-            <div class="input-group">
-                <label for="url">Website URL:</label>
-                <input type="text" id="url" name="url" required>
-            </div>
-
-            <div class="input-group">
-                <label for="depth">Scraping Depth:</label>
-                <input type="number" id="depth" name="depth" value="2" min="1" max="5">
-            </div>
+            <label for="depth">Scraping Depth:</label>
+            <input type="number" id="depth" name="depth" min="1" max="5" value="2" required><br>
 
             <button type="submit">Start Scraping</button>
         </form>
-
-        <div id="results"></div>
     </div>
-
-    <script>
-        document.getElementById('scrape-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const url = document.getElementById('url').value;
-            const depth = document.getElementById('depth').value;
-
-            fetch('/scrape', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: `url=${url}&depth=${depth}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                const resultsDiv = document.getElementById('results');
-                resultsDiv.innerHTML = ''; // Clear previous results
-
-                if (data.error) {
-                    resultsDiv.innerHTML = `<p class="error">${data.error}</p>`;
-                } else {
-                    data.results.forEach(result => {
-                        const resultHTML = `<div class="result">
-                            <h2>${result.url}</h2>
-                            <p><strong>Title:</strong> ${result.title}</p>
-                            <p><strong>Description:</strong> ${result.description}</p>
-                            <p><strong>APIs:</strong> ${result.apis && result.apis.length > 0 ? result.apis.join(', ') : 'None'}</p>
-                            <p><strong>Clients:</strong> ${result.clients && result.clients.length > 0 ? result.clients.join(', ') : 'None'}</p>
-                        </div>`;
-                        resultsDiv.innerHTML += resultHTML;
-                    });
-                }
-            })
-            .catch(error => {
-                document.getElementById('results').innerHTML = `<p class="error">An error occurred: ${error}</p>`;
-            });
-        });
-    </script>
-
 </body>
 </html>
