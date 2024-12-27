@@ -3,56 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Web Scraper</title>
-    <link rel="stylesheet" href="static/style.css"> <!-- Link to your external CSS -->
+    <title>Scraped Results</title>
 </head>
 <body>
-    <div class="container">
-        <h1>Website Scraper</h1>
-        
-        <form action="/scrape" method="POST" id="scrape-form">
-            <label for="website_url">Enter Website URL:</label>
-            <input type="text" id="website_url" name="website_url" required>
-            <button type="submit">Scrape</button>
-        </form>
+    <h1>Scraped Data</h1>
 
-        <div id="scraped-data" style="display:none;">
-            <h2>Scraped Data</h2>
-            <pre id="json-output"></pre>
-            <button id="download-json">Download JSON</button>
-        </div>
-    </div>
+    <h2>Subscription Plans</h2>
+    <ul>
+        {% for plan in subscription_plans %}
+            <li>{{ plan.name }} - {{ plan.price }} - {{ plan.description }}</li>
+        {% endfor %}
+    </ul>
 
-    <script>
-        // Handling form submission and displaying data in JSON format
-        document.getElementById('scrape-form').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const websiteUrl = document.getElementById('website_url').value;
+    <h2>User Stats</h2>
+    <p>Total Users: {{ user_stats.total_users }}</p>
+    <p>Total Likes: {{ user_stats.total_likes }}</p>
+    <p>Total Shares: {{ user_stats.total_shares }}</p>
+    <p>Total Views: {{ user_stats.total_views }}</p>
+    <p>Total Posts: {{ user_stats.total_posts }}</p>
 
-            fetch('/scrape', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `website_url=${websiteUrl}`,
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Show scraped data as JSON
-                document.getElementById('scraped-data').style.display = 'block';
-                document.getElementById('json-output').textContent = JSON.stringify(data, null, 4);
-                
-                // Enable download button
-                document.getElementById('download-json').addEventListener('click', function() {
-                    const blob = new Blob([JSON.stringify(data, null, 4)], { type: 'application/json' });
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(blob);
-                    link.download = 'scraped_data.json';
-                    link.click();
-                });
-            })
-            .catch(error => console.error('Error:', error));
-        });
-    </script>
+    <h2>Links on the Page</h2>
+    <ul>
+        {% for link in links %}
+            <li><a href="{{ link }}" target="_blank">{{ link }}</a></li>
+        {% endfor %}
+    </ul>
 </body>
 </html>

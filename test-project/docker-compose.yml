@@ -1,0 +1,35 @@
+version: "3"
+services:
+  selenium-hub:
+    image: selenium/hub:4.27.0
+    container_name: selenium-hub
+    ports:
+      - "4444:4444"
+    environment:
+      - SE_GRID_SESSION_TIMEOUT=180000
+      - SE_NODE_SESSION_TIMEOUT=180000
+      - SE_NODE_MAX_SESSIONS=5
+
+  selenium-chrome-node:
+    image: selenium/node-chrome:4.27.0
+    container_name: selenium-chrome-node
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+    depends_on:
+      - selenium-hub
+    expose:
+      - "5555"  # Expose the WebDriver port
+
+  selenium-firefox-node:
+    image: selenium/node-firefox:4.27.0
+    container_name: selenium-firefox-node
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+    depends_on:
+      - selenium-hub
+    expose:
+      - "5555"

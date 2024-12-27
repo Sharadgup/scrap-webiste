@@ -1,24 +1,21 @@
-import requests
-from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
-def scrape_website(url):
-    response = requests.get(url)
-    soup = BeautifulSoup(response.content, 'html.parser')
+# Use Dockerized Selenium
+options = webdriver.ChromeOptions()
+options.add_argument('--headless')  # Run headless
+options.add_argument('--disable-gpu')
+options.add_argument('--no-sandbox')
 
-    # Example: Extract title, description, and links
-    title = soup.title.string if soup.title else 'No Title'
-    description = soup.find('meta', attrs={'name': 'description'}) or soup.find('meta', attrs={'property': 'og:description'})
-    description = description['content'] if description else 'No Description'
+# Connect to the remote WebDriver
+driver = webdriver.Remote(
+    command_executor='http://172.17.0.2:4444',
+    options=options
+)
 
-    # Extract all links
-    links = [a['href'] for a in soup.find_all('a', href=True)]
-
-    # Structure the data into a JSON format
-    data = {
-        'title': title,
-        'description': description,
-        'text': soup.get_text(),
-        'links': links
-    }
-
-    return data
+# Example usage
+driver.get("https://www.instagram.com/jun.amaki/")
+print(driver.page_source)
+driver.quit()

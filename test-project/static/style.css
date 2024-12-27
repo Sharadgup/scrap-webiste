@@ -1,101 +1,25 @@
-/* General Reset */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-/* Body and Background */
+/* Basic Styles for Form and Results */
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: Arial, sans-serif;
     background-color: #f4f4f9;
-    color: #333;
     padding: 20px;
-    line-height: 1.6;
-}
-
-/* Page Container */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-/* Heading Styles */
-h1, h2 {
-    text-align: center;
-    color: #2c3e50;
-    margin-bottom: 20px;
 }
 
 h1 {
-    font-size: 36px;
+    text-align: center;
+    color: #2c3e50;
 }
 
-h2 {
-    font-size: 28px;
+form {
+    margin: 20px 0;
+    text-align: center;
 }
 
-/* Form and Input Styling */
-input[type="text"] {
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    width: 100%;
-    font-size: 16px;
-    margin-bottom: 15px;
+#result {
+    margin-top: 30px;
+    text-align: center;
 }
 
-button {
-    background-color: #3498db;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
-}
-
-button:hover {
-    background-color: #2980b9;
-}
-
-button:focus {
-    outline: none;
-}
-
-/* JSON Output */
-#json-output {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    font-family: monospace;
+#subscription-data {
     margin-top: 20px;
-}
-
-/* Responsive Design */
-@media screen and (max-width: 768px) {
-    .container {
-        padding: 10px;
-    }
-
-    h1 {
-        font-size: 28px;
-    }
-
-    h2 {
-        font-size: 22px;
-    }
-
-    input[type="text"] {
-        font-size: 14px;
-    }
-
-    button {
-        font-size: 14px;
-    }
 }
