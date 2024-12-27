@@ -3,26 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scraping Results</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Scraped Results</title>
+    <link rel="stylesheet" href="static/style.css"> <!-- Link to your external CSS -->
 </head>
 <body>
     <div class="container">
-        <h1>Scraping Results</h1>
-        <a href="/">Back to Scraper</a>
-        <div class="results">
-            {% for result in results %}
-                {% for url, data in result.items() %}
-                    <div class="result-item">
-                        <h2>{{ url }}</h2>
-                        <p><strong>Title:</strong> {{ data.title }}</p>
-                        <p><strong>Description:</strong> {{ data.description }}</p>
-                        <p><strong>APIs:</strong> {{ data.apis if data.apis else 'None' }}</p>
-                        <p><strong>Clients:</strong> {{ data.clients if data.clients else 'None' }}</p>
-                    </div>
-                {% endfor %}
+        <h1>Scraped Results</h1>
+        
+        <h2>Title</h2>
+        <p>{{ data.title }}</p>
+
+        <h2>Description</h2>
+        <p>{{ data.description }}</p>
+
+        <h2>Visible Text</h2>
+        <p>{{ data.text }}</p>
+
+        <h2>Links</h2>
+        <ul>
+            {% for link in data.links %}
+            <li><a href="{{ link }}" target="_blank">{{ link }}</a></li>
             {% endfor %}
-        </div>
+        </ul>
+
+        <a href="/">Back to Home</a>
     </div>
 </body>
 </html>
